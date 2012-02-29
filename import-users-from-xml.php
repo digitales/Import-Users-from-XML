@@ -12,7 +12,7 @@ Author URI: http://dachisgroup.com
 License: GPL2
 Text Domain: import-users-from-xml
 */
-/*  Copyright 2011  Ulrich Sossou  (https://github.com/sorich87)
+/*  Copyright 2012  Ross Tweedie  (https://github.com/digitales)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as
