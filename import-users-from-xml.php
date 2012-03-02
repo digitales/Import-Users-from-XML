@@ -39,7 +39,7 @@ class Import_Users_From_Xml {
 	private static $log_dir_path = '';
 	private static $log_dir_url  = '';
 
-    var $depth= array();
+    var $depth = array();
     
     /**
      * Field name mapping
@@ -72,7 +72,7 @@ class Import_Users_From_Xml {
 	 * @since 0.1
 	 **/
 	public function add_admin_pages() {
-		add_users_page( __( 'Import From XML' , 'import-users-from-xml'), __( 'Import From XML' , 'import-users-from-xml'), 'create_users', 'import-users-from-xml', array( __CLASS__, 'users_page' ) );
+		add_users_page( __( 'Import From XML' , 'import-users-from-xml' ), __( 'Import From XML' , 'import-users-from-xml' ), 'create_users', 'import-users-from-xml', array( __CLASS__, 'users_page' ) );
 	}
 
 	/**
@@ -120,7 +120,7 @@ class Import_Users_From_Xml {
 	 **/
 	public function users_page() {
 		if ( ! current_user_can( 'create_users' ) ){
-			wp_die( __( 'You do not have sufficient permissions to access this page.' , 'import-users-from-xml') );
+			wp_die( __( 'You do not have sufficient permissions to access this page.' , 'import-users-from-xml' ) );
 		}
         
         $show_form      = true;
@@ -131,31 +131,31 @@ class Import_Users_From_Xml {
 
         if ( ! file_exists( $error_log_file ) ) {
             if ( ! @fopen( $error_log_file, 'x' ) )
-                $message = '<div class="updated"><p><strong>' . sprintf( __( 'Notice: please make the directory %s writable so that you can see the error log.' , 'import-users-from-xml'), self::$log_dir_path ) . '</strong></p></div>';
+                $message = '<div class="updated"><p><strong>' . sprintf( __( 'Notice: please make the directory %s writable so that you can see the error log.' , 'import-users-from-xml' ), self::$log_dir_path ) . '</strong></p></div>';
         }
         
         if ( isset( $_GET['import'] ) ) {
             $error_log_msg = '';
             if ( file_exists( $error_log_file ) )
-                $error_log_msg = sprintf( __( ', please <a href="%s">check the error log</a>' , 'import-users-from-xml'), $error_log_url );
+                $error_log_msg = sprintf( __( ', please <a href="%s">check the error log</a>' , 'import-users-from-xml' ), $error_log_url );
     
             switch ( $_GET['import'] ) {
                 case 'file':
-                    $message = '<div class="error"><p><strong>' . __( 'Error during file upload.' , 'import-users-from-xml') . '</strong></p></div>';
+                    $message = '<div class="error"><p><strong>' . __( 'Error during file upload.' , 'import-users-from-xml' ) . '</strong></p></div>';
                     break;
                 case 'data':
-                    $message = '<div class="error"><p><strong>' . __( 'Cannot extract data from uploaded file or no file was uploaded.' , 'import-users-from-xml') . '</strong></p></div>';
+                    $message = '<div class="error"><p><strong>' . __( 'Cannot extract data from uploaded file or no file was uploaded.' , 'import-users-from-xml' ) . '</strong></p></div>';
                     break;
                 case 'fail':
-                    $message = '<div class="error"><p><strong>' . sprintf( __( 'No user was successfully imported%s.' , 'import-users-from-xml'), $error_log_msg ) . '</strong></p></div>';
+                    $message = '<div class="error"><p><strong>' . sprintf( __( 'No user was successfully imported%s.' , 'import-users-from-xml' ), $error_log_msg ) . '</strong></p></div>';
                     $show_form = false;
                     break;
                 case 'errors':
-                    $message = '<div class="error"><p><strong>' . sprintf( __( 'Some users were successfully imported but some were not%s.' , 'import-users-from-xml'), $error_log_msg ) . '</strong></p></div>';
+                    $message = '<div class="error"><p><strong>' . sprintf( __( 'Some users were successfully imported but some were not%s.' , 'import-users-from-xml' ), $error_log_msg ) . '</strong></p></div>';
                     $show_form = false;
                     break;
                 case 'success':
-                    $message = '<div class="updated"><p><strong>' . __( 'Users import was successful.' , 'import-users-from-xml') . '</strong></p></div>';
+                    $message = '<div class="updated"><p><strong>' . __( 'Users import was successful.' , 'import-users-from-xml' ) . '</strong></p></div>';
                     $show_form = false;
                     break;
                 default:
@@ -163,7 +163,7 @@ class Import_Users_From_Xml {
             }
         }
         
-        include( 'views/settings-page.php');
+        include( 'views/settings-page.php' );
 	
 	}
     
@@ -193,7 +193,9 @@ class Import_Users_From_Xml {
 		$userdata = $usermeta = $errors = $user_ids = array();
         $xml_file = simplexml_load_file( $filename );
         
-        if ( empty($xml_file) ){ return false; }
+        if ( empty($xml_file) ) {
+            return false;
+        }
         
         $count = 0;
         foreach( $xml_file AS $row ) :
@@ -206,15 +208,17 @@ class Import_Users_From_Xml {
             $usermeta = apply_filters( 'iu_fx_import_usermeta', $usermeta, $userdata );
 
             // If no user data :(
-            if ( empty( $userdata ) ){ continue; }
+            if ( empty( $userdata ) ) {
+                continue;
+            }
 
         	// Something to be done before importing one user?
             do_action( 'iu_fx_pre_user_import', $userdata, $usermeta );
             
-            $result = self::save_user( $userdata, $usermeta, array( 'password_nag' => $password_nag, 'new_user_notification' => $new_user_notification) );
+            $result = self::save_user( $userdata, $usermeta, array( 'password_nag' => $password_nag, 'new_user_notification' => $new_user_notification ) );
             
-            if ( (int) $result >0 ) {
-                $user_ids[]= $result->user_id;
+            if ( (int) $result > 0 ) {
+                $user_ids[] = $result->user_id;
             } else {
                 $errors[ $count ] = $result->error;
             }
@@ -230,7 +234,7 @@ class Import_Users_From_Xml {
 
 		return array(
 			'user_ids' => $user_ids,
-			'errors'   => $errors
+			'errors'   => $errors,
 		);
 	}
     
@@ -258,14 +262,11 @@ class Import_Users_From_Xml {
         unset( $userdata['user_hash']);
         
         // Insert or update... at last! If only user ID was provided, we don't need to do anything at all. :)
-		if ( array( 'ID' => $user_id ) == $userdata ){
+		if ( array( 'ID' => $user_id ) == $userdata ) {
 			$user_id = get_userdata( $user_id )->ID; // To check if the user id exists
-		} else if ( $update ){
-            
+		} elseif ( $update ){
 			$user_id = wp_update_user( $userdata );
-            
-		} else {
-            
+        } else {
             if ( empty( $userdata['user_pass'] ) ){
                 $userdata['user_pass'] = wp_generate_password( 12, false );
             }
@@ -278,7 +279,7 @@ class Import_Users_From_Xml {
          * This will be changed to the WordPress encrypted password next time the user logs in.
          */
         if ( $hash ){
-            $wpdb->update($wpdb->users, array('user_pass' => $hash, 'user_activation_key' => ''), array('ID' => $user_id) );
+            $wpdb->update( $wpdb->users, array( 'user_pass' => $hash, 'user_activation_key' => '' ), array( 'ID' => $user_id ) );
         }
         
         
@@ -298,8 +299,8 @@ class Import_Users_From_Xml {
 
 		// If we created a new user, maybe set password nag and send new user notification?
 		if ( ! $update ) {
-            if ( isset( $args['password_nag'] ) and $args['password_nag'] == tue ){
-				update_user_option( $user_id, 'default_password_nag', true, true );
+            if ( isset( $args['password_nag'] ) and $args['password_nag'] == true ) {
+                update_user_option( $user_id, 'default_password_nag', true, true );
 			}
 
             if ( isset( $args['new_user_notification'] ) and $args['new_user_notification'] == tue ){
@@ -322,14 +323,14 @@ class Import_Users_From_Xml {
      * @param object $data
      * @return object
      */
-    private function process_userdata ( $data ) {
+    private function process_userdata( $data ) {
         $userdata_fields = $usermeta = array();
     
         $userdata_fields = self::get_userdata_fields();
         $mapping = self::get_field_mapping();
         
-        
-        foreach( $data AS $column_name => $value ) { // Normalise the data.
+        // Normalise the data.
+        foreach ( $data AS $column_name => $value ) {
             $value = (string) trim( $value );
             $key = ( isset( $mapping[ $column_name ] ) )? $mapping[ $column_name ] : $column_name;
 
@@ -356,13 +357,13 @@ class Import_Users_From_Xml {
      private function get_userdata_fields() {
         // User data fields list used to differentiate with user meta
 		return array(
-			'ID' => true, 'user_login' => true, 'user_pass'  => true,
+			'id' => true, 'user_login' => true, 'user_pass'  => true,
 			'user_email' => true, 'user_url'  => true, 'user_nicename' => true,
 			'display_name' => true, 'user_registered' => true, 'first_name' => true,
 			'last_name' => true, 'nickname' => true, 'description' => true,
 			'rich_editing' => true, 'comment_shortcuts' => true, 'admin_color' => true,
 			'use_ssl' => true, 'show_admin_bar_front' => true, 'show_admin_bar_admin' => true,
-			'role' => true
+			'role' => true,
 		);
     }
     
@@ -377,17 +378,16 @@ class Import_Users_From_Xml {
 			return;
 
 		$log = @fopen( self::$log_dir_path . 'iu_fx_import_errors.log', 'a' );
-		@fwrite( $log, sprintf( __( 'BEGIN %s' , 'import-users-from-xml'), date( 'Y-m-d H:i:s', time() ) ) . "\n" );
+		@fwrite( $log, sprintf( __( 'BEGIN %s' , 'import-users-from-xml' ), date( 'Y-m-d H:i:s', time() ) ) . "\n" );
 
 		foreach ( $errors as $key => $error ) {
 			$line = $key + 1;
 			$message = $error->get_error_message();
-			@fwrite( $log, sprintf( __( '[Element %1$s] %2$s' , 'import-users-from-xml'), $line, $message ) . "\n" );
+			@fwrite( $log, sprintf( __( '[Element %1$s] %2$s', 'import-users-from-xml' ), $line, $message ) . "\n" );
 		}
 
 		@fclose( $log );
 	}
 }
-
 
 Import_Users_From_Xml::init();
